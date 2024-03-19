@@ -1,0 +1,11 @@
+{
+  "name": "nyumbani",
+  "version": "1.0.0",
+  "description": "Nyumbani is a modern and intuitive home rental platform designed to simplify the process of finding, listing, and managing rental properties in Uganda. Whether you're a renter searching for your dream home or a landlord looking to list your property, Nyumbani provides a seamless and secure solution for all your rental needs.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "AropetJ",
+  "license": "MIT"
+}
