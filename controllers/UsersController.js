@@ -15,8 +15,8 @@ class UsersController {
    */
   static async registerMe(req, res) {
     try {
-      // Check if the user exists
       if (req.body && req.body.email){
+        // Check if the user exists
         const existingUser =await User.findOne({ email: req.body.email });
         if (existingUser) {
           return res.status(400).json({ message: 'User already exists' });
@@ -59,27 +59,32 @@ class UsersController {
    */
   static async loginMe(req, res) {
     try {
-    // Check if a user exists
-    const user = await User.findOne({ email: res.body.email });
+      if (req.body && req.body.email){
+        // Check if a user exists
+        const user = await User.findOne({ email: req.body.email });
 
-    if (!user) {
-      return res.status(400).json({ message: 'User with this email doesnot exist' });
+        if (!user) {
+          return res.status(400).json({ message: 'User with this email doesnot exist' });
+        }
+
+        // Check for password
+        const passwordMatch = await bcrypt.compare(req.body.password, user.password);
+        if (!passwordMatch) {
+          return res.status(400).json({ message: 'Invalid password, please try again' });
+        }
+
+        // Generate session token
+        const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET);
+
+        res.status(200).json({ token });
+      }
+      if (!req.body.email) {
+        return res.status(400).json({ message: 'Email is required' });
+}
+    } catch(error) {
+        console.error(error);
+        res.status(500).json({ message: 'Failed to login, Internal server error' });
     }
-
-    // Check for password
-    const passwordMatch = await bcrypt.compare(req.body.password, user.password);
-    if (!passwordMatch) {
-      return res.status(400).json({ message: 'Invalid password, please try again' });
-    }
-
-    // Generate session token
-    const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET);
-
-    res.status(200).json({ token });
-  } catch(error) {
-    console.error(error);
-    res.status(500).json({ message: 'Failed to login, Internal server error' });
-  }
   }
 
   // REQUEST PASSWORD RESET
