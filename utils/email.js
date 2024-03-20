@@ -5,7 +5,11 @@ const nodeMailer = require('nodemailer');
 const EMAIL = process.env.EMAIL;
 const PASSWORD = process.env.PASSWORD;
 
-// Create a node mailer transporter
+/**
+ * The transporter object for sending emails.
+ *
+ * @type {Object}
+ */
 const transporter = nodeMailer.createTransport({
   service: 'Gmail',
   auth: {
@@ -14,7 +18,13 @@ const transporter = nodeMailer.createTransport({
   }
 });
 
-// Function to send password reset email
+/**
+ * Sends a password reset email to the specified email address.
+ *
+ * @param {string} email - The email address to send the password reset email to.
+ * @param {string} token - The password reset token.
+ * @returns {Promise<void>} - A promise that resolves when the email is sent successfully.
+ */
 async function sendPasswordResetEmail(email, token) {
   const mailOptions = {
     from: EMAIL,
@@ -27,7 +37,12 @@ async function sendPasswordResetEmail(email, token) {
   await transporter.sendMail(mailOptions);
 }
 
-// Function to send email verification email
+/**
+ * Sends an email verification email to the specified email address.
+ * @param {string} email - The email address to send the verification email to.
+ * @param {string} token - The verification token to include in the email.
+ * @returns {Promise<void>} - A promise that resolves when the email is sent.
+ */
 async function sendEmailVerificationEmail(email, token) {
   const mailOptions = {
     from: 'your-email@gmail.com',
@@ -41,3 +56,4 @@ async function sendEmailVerificationEmail(email, token) {
 }
 
 module.exports = { sendPasswordResetEmail, sendEmailVerificationEmail };
+// Path: utils/email.test.js

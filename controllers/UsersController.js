@@ -221,3 +221,4 @@ class UsersController {
 }
 
 module.exports = UsersController;
+// Path: controllers/UsersController.js
