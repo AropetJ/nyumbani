@@ -7,10 +7,11 @@ class UsersController {
 
   // REGISTRATION
   /**
-   * 
-   * @param {} req 
-   * @param {} res 
-   * @returns 
+   * Registers a new user.
+   *
+   * @param {Object} req - The request object.
+   * @param {Object} res - The response object.
+   * @returns {Promise<void>} - A promise that resolves when the user is registered.
    */
   static async registerMe(req, res) {
     try {
@@ -48,6 +49,14 @@ class UsersController {
   }
 
   // LOGIN
+  /**
+   * Logs in a user.
+   *
+   * @param {Object} req - The request object.
+   * @param {Object} res - The response object.
+   * @returns {Promise<void>} - A promise that resolves when the login process is complete.
+   * @throws {Error} - If an error occurs during the login process.
+   */
   static async loginMe(req, res) {
     try {
     // Check if a user exists
@@ -74,6 +83,14 @@ class UsersController {
   }
 
   // REQUEST PASSWORD RESET
+  /**
+   * Initiates the password reset process for a user.
+   *
+   * @param {Object} req - The request object.
+   * @param {Object} res - The response object.
+   * @returns {Promise<void>} - A promise that resolves when the password reset process is initiated.
+   * @throws {Error} - If an error occurs while initiating the password reset process.
+   */
   static async requestPasswordReset(req, res) {
     try {
     const user = await User.findOne({ email: req.body.email });
@@ -101,6 +118,13 @@ class UsersController {
   }
 
   // PASSWORD RESET
+  /**
+   * Reset the user's password.
+   *
+   * @param {Object} req - The request object.
+   * @param {Object} res - The response object.
+   * @returns {Promise<void>} - A promise that resolves when the password reset is successful.
+   */
   static async passwordReset(req, res) {
     try {
       const {token, password } = req.body;
@@ -126,6 +150,14 @@ class UsersController {
   }
 
   // REQUEST EMAIL VERIFICATION
+  /**
+   * Requests email verification for a user.
+   *
+   * @param {Object} req - The request object.
+   * @param {Object} res - The response object.
+   * @returns {Promise<void>} - A promise that resolves when the email verification process is complete.
+   * @throws {Error} - If an error occurs during the email verification process.
+   */
   static async requestEmailVerification(req, res) {
     try {
     const user = await User.findOne({ email: req.body.email });
@@ -152,6 +184,13 @@ class UsersController {
   }
 
   // VERIFY EMAIL
+  /**
+   * Verifies the user's email using the provided token.
+   *
+   * @param {Object} req - The request object.
+   * @param {Object} res - The response object.
+   * @returns {Promise<void>} - A promise that resolves once the email verification is complete.
+   */
   static async verifyEmail(req, res) {
     try {
     const { token } = req.body;
