@@ -6,38 +6,45 @@ const { sendPasswordResetEmail, sendEmailVerificationEmail } = require('../utils
 class UsersController {
 
   // REGISTRATION
+  /**
+   * 
+   * @param {} req 
+   * @param {} res 
+   * @returns 
+   */
   static async registerMe(req, res) {
     try {
-    // Check if the user exists
-    const existingUser =await User.findOne({ email: req.body.email });
-    if (existingUser) {
-      return res.status(400).json({ message: 'User already exists' });
-    }
+      // Check if the user exists
+      if (req.body && req.body.email){
+        const existingUser =await User.findOne({ email: req.body.email });
+        if (existingUser) {
+          return res.status(400).json({ message: 'User already exists' });
+        }
 
-    // Enforce password policy
-    if (req.body.password.length < 8) {
-      return res.status(400).json({ message: 'Password must be at least 8 characters long' });
-    }
+        // Enforce password policy
+        if (req.body.password.length < 8) {
+          return res.status(400).json({ message: 'Password must be at least 8 characters long' });
+        }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(req.body.password, 12);
+        // Hash password
+        const hashedPassword = await bcrypt.hash(req.body.password, 12);
 
-    // Create a new User
-    // TODO: Add other user properties
-    const newUser = new User({
-      email: req.body.email,
-      password: hashedPassword,
-    });
+        // Create a new User
+        // TODO: Add other user properties
+        const newUser = new User({
+          email: req.body.email,
+          password: hashedPassword,
+        });
 
-    // Save the user to the database
-    await newUser.save();
+        // Save the user to the database
+        await newUser.save();
 
-    res.status(201).json({ message: 'Account created successfully' });
-
-  }catch (error) {
-    console.error(error);
-    res.statu(500).json({message: 'Failed to create user, internal server error'});
-  };
+        res.status(201).json({ message: 'Account created successfully' });
+      }
+    }catch (error) {
+      console.error(error);
+      res.status(500).json({message: 'Failed to create user, internal server error'});
+    };
   }
 
   // LOGIN
