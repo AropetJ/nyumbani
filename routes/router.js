@@ -4,8 +4,11 @@
  */
 
 const express = require('express');
+const { check } = require('express-validator');
+
 const UsersController = require('../controllers/UsersController');
 const loginLimiter = require('../utils/loginLimiter');
+const validate = require('../utils/inputValidation');
 
 const router = express.Router();
 
@@ -17,7 +20,10 @@ const router = express.Router();
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
-router.post('/register', UsersController.registerMe);
+router.post('/register', [
+  check('email').isEmail().normalizeEmail(),
+  check('password').isLength({ min: 6 }),
+], validate, UsersController.registerMe);
 
 /**
  * Route for user login with rate limiting.
@@ -28,7 +34,10 @@ router.post('/register', UsersController.registerMe);
  * @param {Object} res - Express response object
  * @param {Function} next - Express next middleware function
  */
-router.post('/login', loginLimiter, UsersController.loginMe);
+router.post('/login', [
+  check('email').isEmail().normalizeEmail(),
+  check('password').isLength({ min: 6 }),
+], validate, loginLimiter, UsersController.loginMe);
 
 /**
  * Route for requesting password reset.
@@ -38,7 +47,9 @@ router.post('/login', loginLimiter, UsersController.loginMe);
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
-router.post('/reset-password-request', UsersController.requestPasswordReset);
+router.post('/reset-password-request', [
+  check('email').isEmail().normalizeEmail(),
+], validate, UsersController.requestPasswordReset);
 
 /**
  * Route for resetting password.
@@ -48,7 +59,10 @@ router.post('/reset-password-request', UsersController.requestPasswordReset);
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
-router.post('/reset-password', UsersController.passwordReset);
+router.post('/reset-password', [
+  check('token').not().isEmpty(),
+  check('password').isLength({ min: 6 }),
+], validate, UsersController.passwordReset);
 
 /**
  * Route for requesting email verification.
@@ -58,7 +72,9 @@ router.post('/reset-password', UsersController.passwordReset);
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
-router.post('/email-verification-request', UsersController.requestEmailVerification);
+router.post('/email-verification-request', [
+  check('email').isEmail().normalizeEmail(),
+], validate, UsersController.requestEmailVerification);
 
 /**
  * Route for verifying email.
@@ -68,7 +84,9 @@ router.post('/email-verification-request', UsersController.requestEmailVerificat
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
-router.post('/verify-email', UsersController.verifyEmail);
+router.post('/verify-email', [
+  check('token').not().isEmpty(),
+], validate, UsersController.verifyEmail);
 
 module.exports = router;
 // Path: routes/router.js
