@@ -1,7 +1,7 @@
 import express from 'express';
 
-import { deleteUserById, getUserByEmail, getUsers, getUserById, getUserByPasswordResetToken } from '../db/users';
-import { authentication, random, sendPasswordResetEmail } from '../helpers';
+import { deleteUserById, getUserByEmail, getUsers, getUserById, getUserByPasswordResetToken, getUserByEmailVerificationToken } from '../db/users';
+import { authentication, random, sendEmailVerificationEmail, sendPasswordResetEmail } from '../helpers';
 
 require('dotenv').config();
 
@@ -103,6 +103,59 @@ export const passwordReset = async (req: express.Request, res: express.Response)
     await user.save();
 
     res.status(200).json({ message: 'Password reset successful' });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: 'A server error occurred' });
+  }
+};
+
+export const requestEmailVerification = async (req: express.Request, res: express.Response) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    const user = await getUserByEmail(email);
+
+    if (!user) {
+      return res.status(400).json({ message: 'User with this email does not exist' });
+    }
+
+    const salt = random();
+    user.emailVerificationToken = authentication(salt, user._id.toString());
+    // user.resetPasswordToken = Date.now() + 3600000;
+    // TODO: Set expiry time to the token
+
+    await user.save();
+
+    await sendEmailVerificationEmail(user.email, user.emailVerificationToken);
+
+    res.status(200).json({ message: 'Email confirmation message sent'});
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to initiate email verification, Internal server error'});
+  }
+}
+
+export const verifyEmail = async (req: express.Request, res: express.Response) => {
+  try {
+    const { emailVerificationToken } = req.body;
+
+    const user = await getUserByEmailVerificationToken(emailVerificationToken);
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired token' });
+    }
+
+    user.emailVerified = true;
+    user.emailVerificationToken = undefined;
+
+    await user.save();
+
+    res.status(200).json({ message: 'Email verification successful' });
   } catch (error) {
     console.log(error);
     return res.status(400).json({ message: 'A server error occurred' });

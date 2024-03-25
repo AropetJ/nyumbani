@@ -4,7 +4,9 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import cors from 'cors';
-const morgan = require('morgan');
+import morgan from 'morgan';
+import helmet from 'helmet';
+import session from 'express-session';
 
 import router from './router';
 import mongoose from 'mongoose';
@@ -12,18 +14,31 @@ import mongoose from 'mongoose';
 require('dotenv').config();
 
 const app = express();
+const SECRET = process.env.SECRET;
+const PORT = process.env.PORT;
 
-app.use(cors({
-  credentials: true,
-}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors({ origin: 'http://127.0.0.1:5500' }));
 app.use(morgan('dev'));
 app.use(compression());
 app.use(cookieParser());
 app.use(bodyParser.json());
+app.use(helmet());
+app.use(session({
+  secret: SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: true, // Enable secure cookie in production
+    maxAge: 1200000, // Session expiration time (20 mins)
+  }
+}));
 
 const server = http.createServer(app);
 
-server.listen(8080, () => {
+server.listen(PORT, () => {
   console.log('Server running on http://localhost:8080/');
 });
 

@@ -1,4 +1,4 @@
-let signupForm = document.querySelector(".my-form");
+const loginForm = document.getElementById('loginForm');
 let email = document.getElementById("email");
 let password = document.getElementById("password");
 let confirmPassword = document.getElementById("confirm-password");
@@ -27,11 +27,9 @@ async function loginUser(email, password) {
         localStorage.setItem('token', token);
 
         // Redirect to dashboard or perform any other action upon successful login
-        window.location.href = 'http://localhost:8080/';
+        window.location.href = 'http://127.0.0.1:5500/client/dashboard/home.html';
     } catch (error) {
-        // Handle error
-        console.error('Login failed:', error.message);
-        // Display error message to the user (e.g., in a toast or alert)
+        // console.log(error);
     }
 }
 
@@ -68,12 +66,17 @@ async function requestPasswordReset(email) {
 
 
 
-signupForm.addEventListener("submit", (event) => {
+loginForm.addEventListener("click", async (event) => {
     event.preventDefault();
-    loginUser(email.value, password.value);
+    
+    try {
+      loginUser(email.value, password.value);
+    } catch (error) {
+      console.error('Login failed:', error.message);
+    }
 });
 
 newPassword.addEventListener("click", (event) => {
-    event.preventDefault();
-    loginUser(email.value, password.value);
+  event.preventDefault();
+  loginUser(email.value, password.value);
 });

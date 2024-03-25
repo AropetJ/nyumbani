@@ -42,6 +42,7 @@ const UserSchema = new mongoose.Schema({
   resetPasswordExpires:{ type: String},
   emailVerificationToken:{ type: String},
   emailVerificationExpires:{ type: String},
+  emailVerified:{ type: Boolean, default: false},
 
   // Financial Information
   paymentMethod: { type: String },
@@ -80,6 +81,7 @@ export const UserModel = mongoose.model('User', UserSchema);
 export const getUsers = () => UserModel.find();
 export const getUserByEmail = (email: string) => UserModel.findOne({ email });
 export const getUserByPasswordResetToken = (resetPasswordToken: string) => UserModel.findOne({ resetPasswordToken: resetPasswordToken });
+export const getUserByEmailVerificationToken = (emailVerificationToken: string) => UserModel.findOne({ emailVerificationToken: emailVerificationToken });
 export const getUserBySessionToken = (sessionToken: string) => UserModel.findOne({ 'authentication.sessionToken': sessionToken });
 export const getUserById = (id: string) => UserModel.findById(id);
 export const createUser = (values: Record<string, any>) => new UserModel(values).save().then((user) => user.toObject());
