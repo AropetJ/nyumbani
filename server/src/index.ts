@@ -9,6 +9,8 @@ const morgan = require('morgan');
 import router from './router';
 import mongoose from 'mongoose';
 
+require('dotenv').config();
+
 const app = express();
 
 app.use(cors({
@@ -25,10 +27,9 @@ server.listen(8080, () => {
   console.log('Server running on http://localhost:8080/');
 });
 
-const MONGO_URL = 'mongodb+srv://aropetjoel32:4wGEtrCBa6Ep7z7c@cluster0.rwjmdqb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'; // DB URI
-
 mongoose.Promise = Promise;
-mongoose.connect(MONGO_URL);
+mongoose.set('strictQuery', true);
+mongoose.connect(process.env.MONGO_URL);
 mongoose.connection.on('error', (error: Error) => console.log(error));
 
 app.use('/', router());
