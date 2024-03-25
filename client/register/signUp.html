@@ -41,6 +41,12 @@
                     <span class="divider-line"></span>
                 </div>
                 <div class="text-field">
+                    <label for="username">Username:
+                        <input type="text" id="username" name="username" autocomplete="off" placeholder="john doe"
+                            required>
+                    </label>
+                </div>
+                <div class="text-field">
                     <label for="email">Email:
                         <input type="email" id="email" name="email" autocomplete="off" placeholder="Your Email"
                             required>
@@ -60,7 +66,7 @@
                             pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$" required>
                     </label>
                 </div>
-                <button class="my-form__button" type="submit">
+                <button id="signupForm" class="my-form__button" type="submit">
                     Sign up
                 </button>
                 <div class="my-form__actions">

@@ -1,16 +1,17 @@
-let signupForm = document.querySelector(".my-form");
+let signupForm = document.getElementById("signupForm");
+let userName = document.getElementById("username");
 let email = document.getElementById("email");
 let password = document.getElementById("password");
 let confirmPassword = document.getElementById("confirm-password");
 
-async function registerUser(email, password) {
+async function registerUser(username, email, password) {
     try {
         const response = await fetch('http://localhost:8080/auth/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({ username, email, password })
         });
 
         if (!response.ok) {
@@ -25,7 +26,7 @@ async function registerUser(email, password) {
         console.log('User registered successfully:', responseData);
 
         // Redirect to login page or perform any other action upon successful registration
-        window.location.href = 'http://localhost:5500/login';
+        window.location.href = 'http://localhost:5500/client/login/login.html';
     } catch (error) {
         // Handle error
         console.error('Registration failed:', error.message);
@@ -33,9 +34,13 @@ async function registerUser(email, password) {
     }
 }
 
-signupForm.addEventListener("submit", (event) => {
+signupForm.addEventListener("click", async (event) => {
     event.preventDefault();
-    registerUser(email.value, password.value);
+    try {
+      registerUser(userName.value, email.value, password.value);
+    } catch (error) {
+      console.error('Login failed:', error.message);
+    }
 });
 
 function onChange() {
