@@ -1,7 +1,11 @@
 import express from 'express';
 
-import { deleteUserById, getUserByEmail, getUsers, getUserById } from '../db/users';
+import { deleteUserById, getUserByEmail, getUsers, getUserById, getUserByPasswordResetToken } from '../db/users';
 import { authentication, random, sendPasswordResetEmail } from '../helpers';
+
+require('dotenv').config();
+
+const SECRET = process.env.SECRET;
 
 export const getAllUsers = async (req: express.Request, res: express.Response) => {
   try {
@@ -78,3 +82,29 @@ export const requestPasswordReset = async (req: express.Request, res: express.Re
     res.status(500).json({ message: 'Failed to initiate password reset, Internal server error'});
   }
 }
+
+export const passwordReset = async (req: express.Request, res: express.Response) => {
+  try {
+    const { resetPasswordToken, password } = req.body;
+
+    const user = await getUserByPasswordResetToken(resetPasswordToken);
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired token' });
+    }
+
+    const salt = random();
+    const hashedPassword = authentication(salt, password);
+
+    user.authentication.password = hashedPassword;
+    user.authentication.salt = salt;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.status(200).json({ message: 'Password reset successful' });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: 'A server error occurred' });
+  }
+};

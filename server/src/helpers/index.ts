@@ -9,13 +9,15 @@ const EMAIL = process.env.EMAIL;
 const PASSWORD = process.env.PASSWORD;
 const transporter = nodeMailer.createTransport({
   host: 'smtp.gmail.com',
-  secure: true,
   port: 587,
   auth: {
     user: EMAIL,
-    password: PASSWORD
+    pass: PASSWORD
+  },
+  tls: {
+    ciphers: 'SSLv3'
   }
-} as nodeMailer.TransportOptions);
+});
 
 export const authentication = (salt: string, password: string): string => {
   return crypto.createHmac('sha256', [salt, password].join('/')).update(SECRET).digest('hex');
@@ -29,7 +31,7 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
     to: email,
     subject: 'Nyumbani Password Reset',
     // TODO: Add a proper page for password reset
-    text: 'Click the following link to reset your password: http://example.com/reset-password?token=${token}',
+    text: `Click the following link to reset your password: http://example.com/reset-password?token=${token}`,
   };
 
   await transporter.sendMail(mailOptions);
@@ -46,3 +48,4 @@ export const sendEmailVerificationEmail = async (email: string, token: string) =
 
   await transporter.sendMail(mailOptions);
 }
+// Path: server/src/routes/auth.ts

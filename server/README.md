@@ -1,49 +1,53 @@
-# Nyumbani
+# nyumbani
+Nyumbani is a modern and intuitive home rental platform designed to simplify the process of finding, listing, and managing rental properties in Uganda. Whether you're a renter searching for your dream home or a landlord looking to list your property, Nyumbani provides a seamless and secure solution for all your rental needs.
 
-Features:
+## Key Features:
+- User Authentication: Secure user authentication and account management.
+- Property Management: Easily list, update, and manage rental properties.
+- Messaging System: Seamless communication between renters and landlords.
+- Integration with Third-party Services: Integration with mapping and payment processing services for enhanced functionality.
+- Data Security and Privacy: Robust security measures to protect user data and privacy.
+- Scalability and Performance: Built for scalability and optimized for performance.
 
-- Environment, Typescript, Nodemon setup
-- MongoDB & Mongoose connect, Database creation
-- Controllers creation
-- Middlewares creation
-- Cookie based authentication
-- Postman testing
-- Create, Read, Update
+## Technologies Used:
+- Backend: Node.js, Express.js, MongoDB
+- Authentication: JSON Web Tokens (JWT)
+- Third-party Services: Google Maps API, Stripe
 
-### Prerequisites
+## Getting Started:
+### Pre-requisites
+- Nodejs
+- MongoDB
 
-**Node version 14.x**
-
-### Cloning the repository
-
-```shell
-git clone https://github.com/AropetJ/nyumbani.git
+### Installation
+- Clone the repository:
+```bash
+git clone https://github.com/yourusername/bulocker.git
 ```
-
-### Install packages
-
-```shell
-npm i
+- Install dependencies:
+```bash
+cd nyumbani
+npm install
 ```
-
-### Setup MongoDB URL
-
-In `src/index.ts`:
-
-```js
-const MONGO_URL = ''; // DB URI
+- Set up environment variables (e.g., MongoDB URI, JWT secret)
+Create a .env file in the root directory and add the following variables:
+```bash
+PORT=3000            # Port for the server (optional, default: 3000)
+MONGODB_URI=your_mongodb_uri   # MongoDB connection URI
+JWT_SECRET=your_jwt_secret      # JWT secret key
 ```
-
-### Start the app
-
-```shell
+- Start the server:
+```bash
 npm start
 ```
 
-## Available commands
+## Contributing:
+- Contributions are welcome! Please fork the repository and submit pull requests for any enhancements or bug fixes.
 
-Running commands with npm `npm run [command]`
+## License:
+- This project is licensed under the MIT License - see the LICENSE file for details.
 
-| command         | description                              |
-| :-------------- | :--------------------------------------- |
-| `start`         | Starts a development instance of the app |
+## Contact:
+For inquiries or support, please contact us at joelaropet@gmail.com.
+
+```Start your rental journey with BuLocker today and unlock the door to your next home!```
