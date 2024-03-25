@@ -16,10 +16,11 @@ require('dotenv').config();
 const app = express();
 const SECRET = process.env.SECRET;
 const PORT = process.env.PORT;
+const allowedOrigins = ['http://localhost:5500', 'http://127.0.0.1:5500'];
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({ origin: 'http://127.0.0.1:5500' }));
+app.use(cors({ origin: allowedOrigins }));
 app.use(morgan('dev'));
 app.use(compression());
 app.use(cookieParser());
