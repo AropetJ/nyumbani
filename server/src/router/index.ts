@@ -5,6 +5,10 @@ import users from './users';
 
 const router = express.Router();
 
+/**
+ * Creates and configures the main router for the application.
+ * @returns The configured express.Router instance.
+ */
 export default (): express.Router => {
   authentication(router);
   users(router);

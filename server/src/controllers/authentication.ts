@@ -7,6 +7,13 @@ import { authentication, random } from '../helpers';
 
 const SECRET = process.env.SECRET;
 
+/**
+ * Handles the login functionality.
+ * 
+ * @param req - The request object.
+ * @param res - The response object.
+ * @returns The response with the user data or an error message.
+ */
 export const login = async (req: express.Request, res: express.Response) => {
   try {
     const { email, password } = req.body;
@@ -41,6 +48,13 @@ export const login = async (req: express.Request, res: express.Response) => {
   }
 };
 
+/**
+ * Registers a new user.
+ * 
+ * @param req - The request object.
+ * @param res - The response object.
+ * @returns The registered user object.
+ */
 export const register = async (req: express.Request, res: express.Response) => {
   try {
     const { email, password, username } = req.body;
@@ -71,3 +85,4 @@ export const register = async (req: express.Request, res: express.Response) => {
     return res.status(400).json({ message: 'A server error occurred' });
   }
 }
+// path: server/src/controllers/authentication.ts

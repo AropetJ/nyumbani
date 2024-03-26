@@ -7,6 +7,13 @@ require('dotenv').config();
 
 const SECRET = process.env.SECRET;
 
+/**
+ * Retrieves all users.
+ * 
+ * @param req - The express request object.
+ * @param res - The express response object.
+ * @returns A JSON response with all users or an error message.
+ */
 export const getAllUsers = async (req: express.Request, res: express.Response) => {
   try {
     const users = await getUsers();
@@ -18,6 +25,13 @@ export const getAllUsers = async (req: express.Request, res: express.Response) =
   }
 };
 
+/**
+ * Deletes a user by their ID.
+ * 
+ * @param req - The request object.
+ * @param res - The response object.
+ * @returns A JSON response containing the deleted user.
+ */
 export const deleteUser = async (req: express.Request, res: express.Response) => {
   try {
     const { id } = req.params;
@@ -31,6 +45,13 @@ export const deleteUser = async (req: express.Request, res: express.Response) =>
   }
 }
 
+/**
+ * Updates a user's username.
+ * 
+ * @param req - The request object containing the user ID and the new username.
+ * @param res - The response object used to send the updated user object or an error message.
+ * @returns A JSON response containing the updated user object or an error message.
+ */
 export const updateUser = async (req: express.Request, res: express.Response) => {
   try {
     const { id } = req.params;
@@ -52,6 +73,12 @@ export const updateUser = async (req: express.Request, res: express.Response) =>
   }
 }
 
+/**
+ * Handles the request to reset a user's password.
+ * @param req - The request object.
+ * @param res - The response object.
+ * @returns A JSON response indicating the status of the password reset request.
+ */
 export const requestPasswordReset = async (req: express.Request, res: express.Response) => {
   try {
     const { email } = req.body;
@@ -83,6 +110,13 @@ export const requestPasswordReset = async (req: express.Request, res: express.Re
   }
 }
 
+/**
+ * Handles the password reset functionality.
+ * 
+ * @param req - The request object.
+ * @param res - The response object.
+ * @returns A JSON response indicating the status of the password reset.
+ */
 export const passwordReset = async (req: express.Request, res: express.Response) => {
   try {
     const { resetPasswordToken, password } = req.body;
@@ -109,6 +143,12 @@ export const passwordReset = async (req: express.Request, res: express.Response)
   }
 };
 
+/**
+ * Handles the request to send an email verification message to a user.
+ * @param req - The express Request object.
+ * @param res - The express Response object.
+ * @returns A JSON response indicating the status of the email verification request.
+ */
 export const requestEmailVerification = async (req: express.Request, res: express.Response) => {
   try {
     const { email } = req.body;
@@ -140,6 +180,13 @@ export const requestEmailVerification = async (req: express.Request, res: expres
   }
 }
 
+/**
+ * Verifies the email of a user using the email verification token.
+ * 
+ * @param req - The express Request object.
+ * @param res - The express Response object.
+ * @returns A JSON response indicating the result of the email verification process.
+ */
 export const verifyEmail = async (req: express.Request, res: express.Response) => {
   try {
     const { emailVerificationToken } = req.body;
@@ -161,3 +208,4 @@ export const verifyEmail = async (req: express.Request, res: express.Response) =
     return res.status(400).json({ message: 'A server error occurred' });
   }
 };
+// path: server/src/controllers/users.ts
