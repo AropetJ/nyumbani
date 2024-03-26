@@ -32,6 +32,7 @@ interface ActivityHistory {
 interface Property extends Document {
   landlord: mongoose.Types.ObjectId;
   title: string;
+  name: string;
   description?: string;
   location: string;
   price: number;
@@ -45,7 +46,7 @@ interface Property extends Document {
 // Define Property schema
 const PropertySchema: Schema = new Schema({
   landlord: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  title: { type: String, required: true },
+  name: { type: String, required: true, unique: true },
   description: { type: String },
   location: { type: String, required: true },
   price: { type: Number, required: true },
@@ -79,14 +80,11 @@ const PropertySchema: Schema = new Schema({
 export const PropertyModel = mongoose.model<Property>('Property', PropertySchema);
 
 
-// User Actions
+// Property Actions
 export const getProperties = () => PropertyModel.find();
-export const getUserByEmail = (email: string) => PropertyModel.findOne({ email });
-export const getUserByPasswordResetToken = (resetPasswordToken: string) => PropertyModel.findOne({ resetPasswordToken: resetPasswordToken });
-export const getUserByEmailVerificationToken = (emailVerificationToken: string) => PropertyModel.findOne({ emailVerificationToken: emailVerificationToken });
-export const getUserBySessionToken = (sessionToken: string) => PropertyModel.findOne({ 'authentication.sessionToken': sessionToken });
-export const getUserById = (id: string) => PropertyModel.findById(id);
-export const createUser = (values: Record<string, any>) => new PropertyModel(values).save().then((user) => user.toObject());
-export const deleteUserById = (id: string) => PropertyModel.findOneAndDelete({ _id: id });
-export const updateUserById = (id: string, values: Record<string, any>) => PropertyModel.findByIdAndUpdate(id, values);
+export const getPropertyByName = (name: string) => PropertyModel.findOne({ name });
+export const getPropertyById = (id: string) => PropertyModel.findById(id);
+export const createProperty = (values: Record<string, any>) => new PropertyModel(values).save().then((property) => property.toObject());
+export const deletePropertyById = (id: string) => PropertyModel.findOneAndDelete({ _id: id });
+export const updatePropertyById = (id: string, values: Record<string, any>) => PropertyModel.findByIdAndUpdate(id, values);
 // Path: server/src/db/properties.ts

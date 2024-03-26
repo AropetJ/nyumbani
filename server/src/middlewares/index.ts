@@ -8,6 +8,7 @@ require('dotenv').config();
 const SECRET = process.env.SECRET;
 
 import { getUserBySessionToken } from '../db/users';
+import { getPropertyById } from '../db/properties';
 
 /**
  * Middleware function to check if a user is authenticated.
@@ -60,6 +61,45 @@ export const isOwner = async (req: express.Request, res: express.Response, next:
     }
 
     if (currentUserId.toString() !== id) {
+      return res.status(403).json({ message: 'Unauthorized' });
+    }
+
+    next();
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: 'A server error occurred' });
+  }
+}
+
+/**
+ * Middleware function to check if the current user is the owner of a resource.
+ * 
+ * @param req - The Express request object.
+ * @param res - The Express response object.
+ * @param next - The next middleware function.
+ * @returns If the current user is not the owner, it returns a response with status 403 (Unauthorized).
+ *          If the current user is not authenticated, it returns a response with status 400 (Unauthorized).
+ *          If a server error occurs, it returns a response with status 400 (A server error occurred).
+ */
+export const isPropertyOwner = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  try {
+    const { id } = req.params;
+    const currentUserId = get(req, 'identity._id') as string; // Assuming the authenticated user ID is stored in req.identity._id
+
+    if (!currentUserId) {
+      return res.status(401).json({ message: 'Unauthorized, Please log in' });
+    }
+
+    const property = await getPropertyById(id);
+    console.log('property', property);
+
+    if (!property) {
+      return res.status(404).json({ message: 'Property not found' });
+    }
+
+    if (property.landlord.toString() !== currentUserId.toString()) {
+      console.log('currentUserId', currentUserId);
+      console.log('landlordId', property.landlord.toString());
       return res.status(403).json({ message: 'Unauthorized' });
     }
 
