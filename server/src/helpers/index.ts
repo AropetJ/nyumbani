@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { text } from 'express';
+import { body } from 'express-validator';
 import nodeMailer from 'nodemailer';
 
 require('dotenv').config();
@@ -74,4 +74,15 @@ export const sendEmailVerificationEmail = async (email: string, token: string) =
 
   await transporter.sendMail(mailOptions);
 }
+
+export const validateRegisterInput = [
+  body('email').isEmail().withMessage('Invalid email'),
+  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+  // TODO: Add more validation rules as needed
+];
+
+export const validateLoginInput = [
+  body('email').isEmail().withMessage('Invalid email'),
+  body('password').notEmpty().withMessage('Password is required'),
+];
 // Path: server/src/helpers/index.ts
