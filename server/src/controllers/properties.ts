@@ -105,3 +105,72 @@ export const updateProperty = async (req: express.Request, res: express.Response
     return res.status(400).json({ message: 'A server error occurred' });
   }
 }
+
+/**
+ * Search properties based on the provided filters.
+ * 
+ * @param req - The request object.
+ * @param res - The response object.
+ * @returns A JSON response containing the properties that match the filters.
+ */
+export const searchProperties = async (req: express.Request, res: express.Response) => {
+  try {
+    const {
+      location,
+      minPrice,
+      maxPrice,
+      propertyType,
+      bedrooms,
+      bathrooms,
+      furnished,
+      amenities
+    } = req.query;
+
+    let query: any = {};
+
+    // Location filter
+    if (typeof location === 'string') {
+      query.location = { $regex: new RegExp(location, 'i') };
+    }
+
+    // Price range filter
+    if (minPrice !== undefined && maxPrice !== undefined) {
+      query.price = { $gte: +minPrice, $lte: +maxPrice };
+    } else if (minPrice !== undefined) {
+      query.price = { $gte: +minPrice };
+    } else if (maxPrice !== undefined) {
+      query.price = { $lte: +maxPrice };
+    }
+
+    // Property type filter
+    if (propertyType) {
+      query['rentalPreferences.propertyType'] = propertyType;
+    }
+
+    // Bedrooms filter
+    if (bedrooms) {
+      query['rentalPreferences.bedrooms'] = +bedrooms;
+    }
+
+    // Bathrooms filter
+    if (bathrooms) {
+      query['rentalPreferences.bathrooms'] = +bathrooms;
+    }
+
+    // Furnished filter
+    if (furnished !== undefined) {
+      query['rentalPreferences.furnished'] = furnished === 'true';
+    }
+
+    // Amenities filter
+    if (amenities) {
+      query['rentalPreferences.amenities'] = { $all: amenities };
+    }
+
+    const properties = await getProperties(query);
+    res.json(properties);
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: 'A server error occurred' });
+  }
+}

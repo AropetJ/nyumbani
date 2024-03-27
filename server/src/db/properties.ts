@@ -81,7 +81,7 @@ export const PropertyModel = mongoose.model<Property>('Property', PropertySchema
 
 
 // Property Actions
-export const getProperties = () => PropertyModel.find();
+export const getProperties = (query?: Record<string, any>) => PropertyModel.find(query);
 export const getPropertyByName = (name: string) => PropertyModel.findOne({ name });
 export const getPropertyById = (id: string) => PropertyModel.findById(id);
 export const createProperty = (values: Record<string, any>) => new PropertyModel(values).save().then((property) => property.toObject());

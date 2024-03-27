@@ -20,7 +20,7 @@ const MONGO_URL = process.env.MONGO_URL;
  * Array of allowed origins for CORS (Cross-Origin Resource Sharing).
  * These are the URLs that are allowed to make requests to the server.
  */
-const allowedOrigins = ['http://localhost:5500', 'http://127.0.0.1:5500'];
+const allowedOrigins = ['http://localhost:5500', 'http://127.0.0.1:5500', 'http://localhost:5173', 'http://127.0.0.1:5173'];
 
 app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
