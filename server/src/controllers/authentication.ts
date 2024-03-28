@@ -2,7 +2,7 @@ import express from 'express';
 
 require('dotenv').config();
 
-import { getUserByEmail, createUser, updateUserById } from '../db/users';
+import { getUserByEmail, createUser, updateUserById, getUserById } from '../db/users';
 import { authentication, random } from '../helpers';
 
 const SECRET = process.env.SECRET;
@@ -38,9 +38,7 @@ export const login = async (req: express.Request, res: express.Response) => {
 
     const salt = random();
     user.authentication.sessionToken = authentication(salt, user._id.toString());
-
     await user.save();
-
     res.cookie(SECRET, user.authentication.sessionToken, { domain: 'localhost', path: '/' });
 
     return res.status(200).json(user).end();
@@ -88,21 +86,59 @@ export const register = async (req: express.Request, res: express.Response) => {
   }
 }
 
+/**
+ * Logs out the user by clearing the session token and the session cookie.
+ * 
+ * @param req - The express Request object.
+ * @param res - The express Response object.
+ * @returns A JSON response indicating the success or failure of the logout operation.
+ */
+export const logout = async (req: express.Request, res: express.Response) => {
+  try {
+    const { id } = req.params;
+    const user = await getUserById(id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.authentication.sessionToken = null;
+    await updateUserById(id, { authentication: user.authentication });
+    res.clearCookie('SESSION_COOKIE_NAME', { domain: 'localhost', path: '/' });
+
+    return res.status(200).json({ message: 'Logout successful' });
+  } catch (error) {
+    console.error('Error:', error);
+
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+/**
+ * Handles the GitHub login process.
+ * Redirects the user to the GitHub authorization URL.
+ *
+ * @param req - The Express request object.
+ * @param res - The Express response object.
+ */
 export const githubLogin = async (req: express.Request, res: express.Response) => {
   const clientId = GITHUB_CLIENT_ID;
   const redirectUri = 'http://localhost:3000/auth/github/callback';
   const scope = 'user';
-
   const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`;
 
   res.redirect(githubAuthUrl);
 }
 
+/**
+ * Handles the GitHub callback after authentication.
+ * @param req - The express Request object.
+ * @param res - The express Response object.
+ * @returns The response with the user data or an error message.
+ */
 export const githubCallback = async (req: express.Request, res: express.Response) => {
   try {
     const { code } = req.query;
-
-    // Exchange code for access token
     const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
       method: 'POST',
       headers: {
@@ -121,8 +157,6 @@ export const githubCallback = async (req: express.Request, res: express.Response
 
     const tokenData = await tokenResponse.json();
     const accessToken = tokenData.access_token;
-
-    // Use the access token to fetch user data from GitHub API
     const userDataResponse = await fetch('https://api.github.com/user', {
       headers: {
         Authorization: `token ${accessToken}`,
@@ -134,8 +168,6 @@ export const githubCallback = async (req: express.Request, res: express.Response
     }
 
     const userData = await userDataResponse.json();
-
-    // Create or retrieve user
     const salt = random();
     let user = await createUser({
       email: userData.email,
@@ -147,24 +179,19 @@ export const githubCallback = async (req: express.Request, res: express.Response
       },
     });
 
-    // If user creation failed due to uniqueness constraint violation, retrieve existing user
     if (!user) {
       user = await getUserByEmail(userData.email);
     }
 
-    // Set session token and save user
     const sessionSalt = random();
     user.authentication.sessionToken = authentication(sessionSalt, user._id.toString());
     await updateUserById(user._id.toString(), { 'user.authentication.sessionToken': user.authentication.sessionToken });
-
-    // Set session token cookie and respond with user data
     res.cookie(SECRET, user.authentication.sessionToken, { domain: 'localhost', path: '/' });
+
     return res.status(200).json(user).end();
   } catch (error) {
     console.error('Error:', error.message);
     res.status(500).send('Internal Server Error');
   }
 }
-
-
 // path: server/src/controllers/authentication.ts
