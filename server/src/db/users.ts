@@ -86,5 +86,16 @@ export const getUserBySessionToken = (sessionToken: string) => UserModel.findOne
 export const getUserById = (id: string) => UserModel.findById(id);
 export const createUser = (values: Record<string, any>) => new UserModel(values).save().then((user) => user.toObject());
 export const deleteUserById = (id: string) => UserModel.findOneAndDelete({ _id: id });
-export const updateUserById = (id: string, values: Record<string, any>) => UserModel.findByIdAndUpdate(id, values);
+export const updateUserById = async (id: string, values: Record<string, any>) => {
+  try {
+    const user = await UserModel.findByIdAndUpdate(id, values, { new: true });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user.toObject();
+  } catch (error) {
+    console.log(error);
+    throw new Error('A server error occurred');
+  }
+};
 // Path: server/src/db/users.ts

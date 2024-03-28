@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { deleteProperty, getAllProperties, registerProperty, updateProperty } from '../controllers/properties';
+import { deleteProperty, getAllProperties, registerProperty, searchProperties, updateProperty } from '../controllers/properties';
 import { isAuthenticated, isOwner, isPropertyOwner, validate } from '../middlewares';
 
 /**
@@ -15,6 +15,13 @@ export default (router: express.Router) => {
    * Requires authentication.
    */
   router.get('/properties', isAuthenticated, getAllProperties);
+
+  /**
+   * GET /search
+   * Route to get properties search results.
+   * Requires authentication.
+   */
+  router.get('/search', isAuthenticated, searchProperties);
 
   /**
    * Registers the '/createproperty' route for property creation.

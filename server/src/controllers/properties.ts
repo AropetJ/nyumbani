@@ -21,6 +21,8 @@ export const registerProperty = async (req: express.Request, res: express.Respon
 
     const { name, location, images, description, price } = req.body;
 
+    // TODO: Add geocodeAddress function to get latitude and longitude
+
     const landlord = userId;
 
     // Create property document
@@ -88,18 +90,16 @@ export const deleteProperty = async (req: express.Request, res: express.Response
 export const updateProperty = async (req: express.Request, res: express.Response) => {
   try {
     const { id } = req.params;
-    const { name } = req.body;
+    const updateFields = req.body; // Get all fields to update from request body
 
-    if (!name) {
-      return res.status(400).json({ message: 'Missing required fields' });
+    if (Object.keys(updateFields).length === 0) {
+      return res.status(400).json({ message: 'No fields to update' });
     }
 
-    const property = await getPropertyById(id);
-    
-    property.name = name;
-    await property.save();
+    // Call the updatePropertyById function to update the user
+    const updatedProperty = await updatePropertyById(id, updateFields);
 
-    return res.status(200).json(property).end();
+    return res.status(200).json(updatedProperty);
   } catch (error) {
     console.log(error);
     return res.status(400).json({ message: 'A server error occurred' });
@@ -170,7 +170,9 @@ export const searchProperties = async (req: express.Request, res: express.Respon
     const properties = await getProperties(query);
     res.json(properties);
   } catch (error) {
-    console.log(error);
-    return res.status(400).json({ message: 'A server error occurred' });
+    console.error('Error searching properties:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 }
+
+// Path: server/src/controllers/properties.ts

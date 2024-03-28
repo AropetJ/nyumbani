@@ -41,6 +41,8 @@ interface Property extends Document {
   rentalHistory?: RentalHistory[];
   notificationSettings?: NotificationSettings;
   activityHistory?: ActivityHistory[];
+  latitude?: number;
+  longitude?: number;
 }
 
 // Define Property schema
@@ -74,6 +76,10 @@ const PropertySchema: Schema = new Schema({
     details: { type: String },
     timestamp: { type: Date, default: Date.now }
   }],
+
+  // location
+  latitude: { type: Number },
+  longitude: { type: Number },
 });
 
 // Export the Property model
@@ -86,5 +92,16 @@ export const getPropertyByName = (name: string) => PropertyModel.findOne({ name 
 export const getPropertyById = (id: string) => PropertyModel.findById(id);
 export const createProperty = (values: Record<string, any>) => new PropertyModel(values).save().then((property) => property.toObject());
 export const deletePropertyById = (id: string) => PropertyModel.findOneAndDelete({ _id: id });
-export const updatePropertyById = (id: string, values: Record<string, any>) => PropertyModel.findByIdAndUpdate(id, values);
+export const updatePropertyById = async (id: string, values: Record<string, any>) => {
+  try {
+    const property = await PropertyModel.findByIdAndUpdate(id, values, { new: true });
+    if (!property) {
+      throw new Error('Property not found');
+    }
+    return property.toObject();
+  } catch (error) {
+    console.log(error);
+    throw new Error('A server error occurred');
+  }
+};
 // Path: server/src/db/properties.ts

@@ -1,12 +1,14 @@
 import crypto from 'crypto';
 import { body } from 'express-validator';
 import nodeMailer from 'nodemailer';
+import axios from 'axios';
 
 require('dotenv').config();
 
 const SECRET = process.env.SECRET;
 const EMAIL = process.env.EMAIL;
 const PASSWORD = process.env.PASSWORD;
+const GOOGLE_API = process.env.GOOGLE_API;
 
 /**
  * The email transporter used for sending emails.
@@ -85,4 +87,29 @@ export const validateLoginInput = [
   body('email').isEmail().withMessage('Invalid email'),
   body('password').notEmpty().withMessage('Password is required'),
 ];
+
+/**
+ * Geocodes an address using the Google Maps Geocoding API.
+ * @param address - The address to geocode.
+ * @returns A promise that resolves to an object containing the latitude and longitude of the geocoded address.
+ * @throws If the geocoding request fails or no results are found for the address.
+ */
+export const geocodeAddress = async (location: string): Promise<{ latitude: number, longitude: number }> =>{
+  const apiKey = GOOGLE_API;
+  const encodedAddress = encodeURIComponent(location);
+  const apiUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${encodedAddress}&limit=5&appid=${apiKey}`;
+
+  try {
+    const response = await axios.get(apiUrl);
+    const { data } = response;
+    if (data && data.results && data.results.length > 0) {
+      const { lat, lng } = data.results[0].geometry.location;
+      return { latitude: lat, longitude: lng };
+    } else {
+      throw new Error('No results found for the address');
+    }
+  } catch (error) {
+    throw new Error('Failed to geocode address: ' + error.message);
+  }
+}
 // Path: server/src/helpers/index.ts

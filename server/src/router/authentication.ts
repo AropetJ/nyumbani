@@ -1,7 +1,7 @@
 import express from 'express';
 import { validationResult } from 'express-validator';
 
-import { login, register } from '../controllers/authentication';
+import { githubCallback, githubLogin, login, register } from '../controllers/authentication';
 import { loginLimiter, validate } from '../middlewares';
 import { validateLoginInput, validateRegisterInput } from '../helpers';
 
@@ -48,4 +48,7 @@ export default (router: express.Router) => {
       next(error); // Pass error to error handling middleware
     }
   });
+
+  router.get('/auth/github', githubLogin);
+  router.get('/auth/github/callback', githubCallback);
 };

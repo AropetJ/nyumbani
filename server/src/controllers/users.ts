@@ -1,9 +1,11 @@
 import express from 'express';
 
-import { deleteUserById, getUserByEmail, getUsers, getUserById, getUserByPasswordResetToken, getUserByEmailVerificationToken } from '../db/users';
+import { deleteUserById, getUserByEmail, getUsers, getUserById, getUserByPasswordResetToken, getUserByEmailVerificationToken, updateUserById } from '../db/users';
 import { authentication, random, sendEmailVerificationEmail, sendPasswordResetEmail } from '../helpers';
 
 require('dotenv').config();
+
+import { UserModel } from '../db/users';
 
 const SECRET = process.env.SECRET;
 
@@ -55,18 +57,16 @@ export const deleteUser = async (req: express.Request, res: express.Response) =>
 export const updateUser = async (req: express.Request, res: express.Response) => {
   try {
     const { id } = req.params;
-    const { username } = req.body;
+    const updateFields = req.body; // Get all fields to update from request body
 
-    if (!username) {
-      return res.status(400).json({ message: 'Missing required fields' });
+    if (Object.keys(updateFields).length === 0) {
+      return res.status(400).json({ message: 'No fields to update' });
     }
 
-    const user = await getUserById(id);
-    
-    user.username = username;
-    await user.save();
+    // Call the updateUserById function to update the user
+    const updatedUser = await updateUserById(id, updateFields);
 
-    return res.status(200).json(user).end();
+    return res.status(200).json(updatedUser);
   } catch (error) {
     console.log(error);
     return res.status(400).json({ message: 'A server error occurred' });

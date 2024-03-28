@@ -2,10 +2,12 @@ import express from 'express';
 
 require('dotenv').config();
 
-import { getUserByEmail, createUser } from '../db/users';
+import { getUserByEmail, createUser, updateUserById } from '../db/users';
 import { authentication, random } from '../helpers';
 
 const SECRET = process.env.SECRET;
+const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
+const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 
 /**
  * Handles the login functionality.
@@ -85,4 +87,84 @@ export const register = async (req: express.Request, res: express.Response) => {
     return res.status(400).json({ message: 'A server error occurred' });
   }
 }
+
+export const githubLogin = async (req: express.Request, res: express.Response) => {
+  const clientId = GITHUB_CLIENT_ID;
+  const redirectUri = 'http://localhost:3000/auth/github/callback';
+  const scope = 'user';
+
+  const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`;
+
+  res.redirect(githubAuthUrl);
+}
+
+export const githubCallback = async (req: express.Request, res: express.Response) => {
+  try {
+    const { code } = req.query;
+
+    // Exchange code for access token
+    const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        client_id: GITHUB_CLIENT_ID,
+        client_secret: GITHUB_CLIENT_SECRET,
+        code,
+      }),
+    });
+
+    if (!tokenResponse.ok) {
+      throw new Error('Failed to obtain access token');
+    }
+
+    const tokenData = await tokenResponse.json();
+    const accessToken = tokenData.access_token;
+
+    // Use the access token to fetch user data from GitHub API
+    const userDataResponse = await fetch('https://api.github.com/user', {
+      headers: {
+        Authorization: `token ${accessToken}`,
+      },
+    });
+
+    if (!userDataResponse.ok) {
+      throw new Error('Failed to fetch user data from GitHub API');
+    }
+
+    const userData = await userDataResponse.json();
+
+    // Create or retrieve user
+    const salt = random();
+    let user = await createUser({
+      email: userData.email,
+      username: userData.login,
+      authentication: {
+        salt,
+        password: authentication(salt, SECRET),
+        sessionToken: authentication(salt, userData.login),
+      },
+    });
+
+    // If user creation failed due to uniqueness constraint violation, retrieve existing user
+    if (!user) {
+      user = await getUserByEmail(userData.email);
+    }
+
+    // Set session token and save user
+    const sessionSalt = random();
+    user.authentication.sessionToken = authentication(sessionSalt, user._id.toString());
+    await updateUserById(user._id.toString(), { 'user.authentication.sessionToken': user.authentication.sessionToken });
+
+    // Set session token cookie and respond with user data
+    res.cookie(SECRET, user.authentication.sessionToken, { domain: 'localhost', path: '/' });
+    return res.status(200).json(user).end();
+  } catch (error) {
+    console.error('Error:', error.message);
+    res.status(500).send('Internal Server Error');
+  }
+}
+
+
 // path: server/src/controllers/authentication.ts
