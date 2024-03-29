@@ -37,7 +37,7 @@ export default (router: express.Router) => {
    * @param validateLoginInput - The validation middleware for login input.
    * @param login - The login handler.
    */
-  router.post('/auth/login', validateLoginInput, async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  router.post('/auth/login', validateLoginInput, loginLimiter, async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
