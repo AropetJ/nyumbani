@@ -103,7 +103,7 @@ export const logout = async (req: express.Request, res: express.Response) => {
     }
 
     user.authentication.sessionToken = null;
-    await updateUserById(id, { authentication: user.authentication });
+    await user.save();
     res.clearCookie('SESSION_COOKIE_NAME', { domain: 'localhost', path: '/' });
 
     return res.status(200).json({ message: 'Logout successful' });
