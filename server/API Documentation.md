@@ -10,15 +10,15 @@ Endpoints requiring authentication are secured using sessionTokens. To authentic
 Authorization: Bearer <SEESION_TOKEN>
 ```
 
-## Endpoints:
+### Endpoints:
 
-1. ### User Registration
+1. #### User Registration
 
 - Endpoint: `POST /auth/register`
 
 This HTTP POST request is used to register a new user for authentication. The request should include a JSON payload in the raw request body type with the keys "username", "email", and "password".
 
-#### Request Body
+##### Request Body
 
 - `username`: (string) The username of the user to be registered.
 - `email`: (string) The email address of the user to be registered.
@@ -48,19 +48,19 @@ The response to this request will be in JSON format with a 200 status code. It i
 - `activityHistory`: (array) Array containing the user's activity history.
 - `__v`: (number) Version number of the user data.
        
-2. ### User Login
+2. #### User Login
 
 - Endpoint: `POST /auth/login`
 
 This API endpoint is used to authenticate a user by providing their email and password.
 
-#### Request Body
+##### Request Body
 
 - email (text, required): The email address of the user.
 - password (text, required): The password of the user.
     
 
-#### Response
+##### Response
 
 - Status: 200
 - Content-Type: application/json
