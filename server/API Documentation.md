@@ -49,27 +49,57 @@ The response to this request will be in JSON format with a 200 status code. It i
 - `__v`: (number) Version number of the user data.
        
 2. ### User Login
-   
-     - Endpoint: `POST /auth/login`
-     - Description: Log in existing user.
-     - Request Body:
-       ```json
-       {
-           "email": "nyumbani@gmail.com",
-           "password": "password123"
-       }
-       ```
-     - Response:
-       - Status: `200 OK`
-       - Body:
-         ```json
-         {
-             "id": "user_id",
-             "email": "nyumbani@gmail.com",
-             "username": "nyumbani",
-             "token": "<SEESION_TOKEN>"
-         }
-         ```
+
+- Endpoint: `POST /auth/login`
+
+This API endpoint is used to authenticate a user by providing their email and password.
+
+#### Request Body
+
+- email (text, required): The email address of the user.
+- password (text, required): The password of the user.
+    
+
+#### Response
+
+- Status: 200
+- Content-Type: application/json
+    
+
+``` json
+{
+    "authentication": {
+        "password": "",
+        "salt": "",
+        "sessionToken": ""
+    },
+    "rentalPreferences": {
+        "preferredLocations": [],
+        "amenities": []
+    },
+    "notificationSettings": {
+        "email": true,
+        "sms": true,
+        "pushNotifications": true
+    },
+    "_id": "",
+    "email": "",
+    "username": "",
+    "identityVerification": true,
+    "socialMediaLinks": [],
+    "employmentVerification": true,
+    "emailVerified": true,
+    "termsAgreed": true,
+    "privacyPolicyAgreed": true,
+    "rentalAgreementAccepted": true,
+    "twoFactorAuthenticationEnabled": true,
+    "isAdmin": true,
+    "rentalHistory": [],
+    "activityHistory": [],
+    "__v": 0
+}
+
+ ```
    
 2. **Properties Management**
 
