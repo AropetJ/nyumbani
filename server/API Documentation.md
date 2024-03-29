@@ -1,43 +1,54 @@
-**BNyumbani API Documentation**
+# Nyumbani API Documentation
 
-**Introduction:**
+## Introduction:
 The Nyumbani API provides endpoints for managing properties, users, authentication, and other functionalities for the Nyumbni application.
 
-**Authentication:**
+## Authentication:
 Endpoints requiring authentication are secured using sessionTokens. To authenticate, include the  sessionToken in the `Authorization` header of the HTTP request.
 
 ```http
 Authorization: Bearer <SEESION_TOKEN>
 ```
 
-**Endpoints:**
+## Endpoints:
 
-1. **User Authentication**
+1. ### User Registration
 
-   - **Register User**
-   
-     - Endpoint: `POST /auth/register`
-     - Description: Register a new user.
-     - Request Body:
-       ```json
-       {
-           "email": "nyumbani@gmail.com",
-           "password": "password123",
-           "username": "nyumbani"
-       }
-       ```
-     - Response:
-       - Status: `201 Created`
-       - Body:
-         ```json
-         {
-             "id": "user_id",
-             "email": "nyumbani@gmail.com",
-             "username": "nyumbani"
-         }
-         ```
+- Endpoint: `POST /auth/register`
+
+This HTTP POST request is used to register a new user for authentication. The request should include a JSON payload in the raw request body type with the keys "username", "email", and "password".
+
+#### Request Body
+
+- `username`: (string) The username of the user to be registered.
+- `email`: (string) The email address of the user to be registered.
+- `password`: (string) The password for the user account.
+    
+
+The response to this request will be in JSON format with a 200 status code. It includes various user details and settings, such as email, username, authentication details, rental preferences, identity verification status, social media links, employment verification status, email verification status, notification settings, terms agreed status, privacy policy agreed status, rental agreement acceptance status, two-factor authentication status, admin status, user ID, rental history, and activity history.
+
+#### Response Body
+
+- `email`: (string) The email address of the registered user.
+- `username`: (string) The username of the registered user.
+- `authentication`: (object) Object containing password and salt for authentication.
+- `rentalPreferences`: (object) Object containing preferred locations and amenities for rentals.
+- `identityVerification`: (boolean) Indicates the status of identity verification.
+- `socialMediaLinks`: (array) Array of social media links associated with the user.
+- `employmentVerification`: (boolean) Indicates the status of employment verification.
+- `emailVerified`: (boolean) Indicates if the email is verified.
+- `notificationSettings`: (object) Object containing email, SMS, and push notification settings.
+- `termsAgreed`: (boolean) Indicates if the user has agreed to the terms.
+- `privacyPolicyAgreed`: (boolean) Indicates if the user has agreed to the privacy policy.
+- `rentalAgreementAccepted`: (boolean) Indicates if the user has accepted the rental agreement.
+- `twoFactorAuthenticationEnabled`: (boolean) Indicates if two-factor authentication is enabled for the user.
+- `isAdmin`: (boolean) Indicates if the user has admin privileges.
+- `_id`: (string) The unique ID of the registered user.
+- `rentalHistory`: (array) Array containing the user's rental history.
+- `activityHistory`: (array) Array containing the user's activity history.
+- `__v`: (number) Version number of the user data.
        
-   - **User Login**
+2. ### User Login
    
      - Endpoint: `POST /auth/login`
      - Description: Log in existing user.
