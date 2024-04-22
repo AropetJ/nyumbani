@@ -23,7 +23,7 @@ Nyumbani is a modern and intuitive home rental platform designed to simplify the
 ### Installation
 - Clone the repository:
 ```bash
-git clone https://github.com/yourusername/bulocker.git
+git clone https://github.com/AropetJ/nyumbani.git
 ```
 - Install dependencies:
 ```bash
